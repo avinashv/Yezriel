@@ -4,20 +4,20 @@ jobs:
     job0:
         runs-on: ubuntu-latest
         steps:
-            - name: Rust toolchain
+            - name: Setup Rust toolchain
               uses: actions-rs/toolchain@v1
               with:
                   toolchain: nightly
                   target: wasm32-unknown-unknown
                   override: true
 
-            - name: cargo-make
+            - name: Setup cargo-make
               uses: davidB/rust-cargo-make@v1
 
-            - name: wasm-bindgen
+            - name: Setup wasm-bindgen
               uses: jetli/wasm-bindgen-action@v0.1.0
               with:
-                  version: "0.2.69"
+                  version: "latest"
 
             - name: Check out repository code
               uses: actions/checkout@v2
@@ -25,8 +25,11 @@ jobs:
             - name: Run CI
               uses: actions-rs/cargo@v1
               with:
-                  command: make
-                  args: "build-web -p release"
+                  command: build
+                  args: "--release --target wasm32-unknown-unknown"
+
+            - name: Run Wasm-bindgen
+              run: wasm-bindgen target\wasm32-unknown-unknown\release\yezriel.wasm --out-dir wasm --no-modules --no-typescript
 
             - name: Create pages directory
               run: mkdir pages
@@ -37,10 +40,10 @@ jobs:
               run: cp index.html pages/
             - name: Copy assets
               run: cp -r assets pages/
-            - name: Copy wasm_bg.wasm
-              run: cp target/wasm_bg.wasm pages/target/
+            - name: Copy yezriel.wasm
+              run: cp release/yezriel.wasm pages/target/
             - name: Copy wasm.js
-              run: cp target/wasm.js pages/target/
+              run: cp release/yezriel.js pages/target/
 
             - name: Update Github Pages branch
               uses: peaceiris/actions-gh-pages@v3
