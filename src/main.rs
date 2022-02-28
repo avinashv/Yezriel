@@ -1,14 +1,39 @@
+mod map;
+mod player;
+
 mod prelude {
     pub use bracket_lib::prelude::*;
+
+    pub use crate::map::*;
+    pub use crate::player::*;
+
+    pub const SCREEN_WIDTH: i32 = 80;
+    pub const SCREEN_HEIGHT: i32 = 50;
 }
 
 use prelude::*;
 
-struct State {}
+struct State {
+    map: Map,
+    player: Player,
+}
+
+impl State {
+    fn new() -> Self {
+        Self {
+            map: Map::new(),
+            player: Player::new(Point::new(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)),
+        }
+    }
+}
+
 impl GameState for State {
     fn tick(&mut self, ctx: &mut BTerm) {
+        // game loop
         ctx.cls();
-        ctx.print(1, 1, "Hello, world!");
+        self.player.update(ctx, &self.map);
+        self.map.render(ctx);
+        self.player.render(ctx);
     }
 }
 
@@ -18,5 +43,5 @@ fn main() -> BError {
         .with_fps_cap(60.0)
         .build()?;
 
-    main_loop(ctx, State {})
+    main_loop(ctx, State::new())
 }
