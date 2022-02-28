@@ -1,5 +1,5 @@
 mod prelude {
-    pub use bracket-lib::prelude::*;
+    pub use bracket_lib::prelude::*;
 }
 
 use prelude::*;
@@ -12,7 +12,7 @@ impl GameState for State {
     }
 }
 
-fn main() -> BError{
+fn main() -> BError {
     let ctx = BTermBuilder::simple80x50()
         .with_title("Yezriel")
         .with_fps_cap(60.0)
